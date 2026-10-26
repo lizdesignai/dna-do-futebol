@@ -1,0 +1,19 @@
+<svg viewBox="280 245 520 590" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="dnaRed" x1="303" y1="267" x2="776" y2="812" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D91E24" />
+      <stop offset="50%" stop-color="#C0191E" />
+      <stop offset="100%" stop-color="#9A1115" />
+    </linearGradient>
+  </defs>
+  <!-- Haste Superior (Raio / Velocidade) -->
+  <path id="wing-top" d="M 675,267 L 677,309 L 676,349 L 668,375 L 662,384 L 652,394 L 306,611 L 303,561 L 304,531 L 311,504 L 323,488 L 673,268 Z" fill="url(#dnaRed)" />
+  <!-- Degrau 1 - Base (Pilar Físico) -->
+  <path id="rung-1" d="M 399,586 L 539,586 L 488,615 L 484,617 L 344,617 L 397,587 Z" fill="#FFFFFF" />
+  <!-- Degrau 2 - Centro (Pilar Técnico) -->
+  <path id="rung-2" d="M 503,527 L 642,527 L 588,558 L 536,559 L 447,559 L 501,529 Z" fill="#FFFFFF" />
+  <!-- Degrau 3 - Topo (Pilar Tático) -->
+  <path id="rung-3" d="M 601,472 L 740,472 L 689,501 L 683,504 L 545,504 L 599,473 Z" fill="#FFFFFF" />
+  <!-- Haste Inferior (Raio / Movimento) -->
+  <path id="wing-bottom" d="M 772,479 L 776,528 L 774,563 L 769,581 L 761,595 L 754,603 L 422,812 L 419,762 L 421,724 L 429,701 L 444,684 L 770,480 Z" fill="url(#dnaRed)" />
+</svg>

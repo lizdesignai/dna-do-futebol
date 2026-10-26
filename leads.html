@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acesso Restrito • Gestão de Leads | DNA do Futebol</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#1C1F21" />
+
+  <!-- Favicon Dinâmico SVG -->
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg" id="dynamic-favicon" />
+
+  <!-- Stylesheet Autoral -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script src="js/main.js" defer></script>
+
+  <style>
+    .crm-page {
+      padding-top: 120px;
+      min-height: 100vh;
+      background-color: var(--dna-black-deep);
+    }
+    /* Tela de Login Obrigatória */
+    .auth-gate {
+      min-height: calc(100vh - 160px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(155deg, #212529 0%, #14171A 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 3px solid var(--dna-red);
+      border-radius: 20px;
+      padding: 36px 28px;
+      box-shadow: 0 32px 70px rgba(0, 0, 0, 0.75);
+      text-align: center;
+    }
+    .auth-card__icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(192, 25, 30, 0.16);
+      border: 1px solid rgba(192, 25, 30, 0.4);
+      color: var(--dna-red-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+    }
+    .auth-card__title {
+      font-family: var(--font-display-wide);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--dna-white);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .auth-card__subtitle {
+      font-size: 0.84rem;
+      color: var(--dna-gray-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-align: left;
+    }
+    .auth-field label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      color: var(--dna-gray-light);
+      margin-bottom: 6px;
+    }
+    .auth-field input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: var(--dna-white);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .auth-field input:focus {
+      border-color: var(--dna-red-bright);
+    }
+    .auth-error {
+      background: rgba(224, 32, 38, 0.16);
+      border: 1px solid var(--dna-red);
+      color: #FF8084;
+      font-size: 0.8rem;
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+    .crm-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .crm-header__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .crm-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .crm-stat-card {
+      background: linear-gradient(145deg, #212529 0%, #16191C 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-left: 4px solid var(--dna-red);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .crm-stat-card span {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      color: var(--dna-gray-muted);
+      margin-bottom: 6px;
+    }
+    .crm-stat-card strong {
+      font-family: var(--font-display-wide);
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--dna-white);
+    }
+    .crm-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 18px;
+      border-radius: 12px;
+    }
+    .crm-search {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .crm-search svg {
+      position: absolute;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      color: var(--dna-gray-muted);
+    }
+    .crm-search input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 12px 10px 36px;
+      color: var(--dna-white);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .crm-search input:focus {
+      border-color: var(--dna-red);
+    }
+    .crm-filters {
+      display: flex;
+      gap: 8px;
+    }
+    .crm-filter-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--dna-gray-light);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .crm-filter-btn.is-active,
+    .crm-filter-btn:hover {
+      background: var(--dna-red);
+      border-color: var(--dna-red);
+      color: var(--dna-white);
+    }
+    .crm-table-wrap {
+      background: #171A1D;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      overflow-x: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    }
+    .crm-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .crm-table th {
+      font-family: var(--font-display);
+      font-size: 0.64rem;
+      letter-spacing: 0.12em;
+      color: var(--dna-gray-muted);
+      padding: 16px 18px;
+      background: rgba(0, 0, 0, 0.35);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      white-space: nowrap;
+    }
+    .crm-table td {
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+    .crm-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .crm-lead-name {
+      font-weight: 700;
+      color: var(--dna-white);
+      display: block;
+    }
+    .crm-lead-date {
+      font-size: 0.74rem;
+      color: var(--dna-gray-muted);
+    }
+    .crm-badge-score {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--dna-red-bright);
+      background: rgba(192, 25, 30, 0.14);
+      border: 1px solid rgba(192, 25, 30, 0.35);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .crm-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 99px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .crm-status-pill--pending {
+      background: rgba(255, 184, 0, 0.12);
+      color: #FFB800;
+      border-color: rgba(255, 184, 0, 0.3);
+    }
+    .crm-status-pill--done {
+      background: rgba(34, 197, 94, 0.14);
+      color: #4ADE80;
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+    .crm-wa-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #16A34A;
+      color: #FFFFFF;
+      font-weight: 600;
+      font-size: 0.78rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: background 0.2s ease, transform 0.2s ease;
+      white-space: nowrap;
+    }
+    .crm-wa-btn:hover {
+      background: #22C55E;
+      transform: translateY(-2px);
+    }
+    @media (max-width: 900px) {
+      .crm-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 560px) {
+      .crm-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <header class="topbar is-scrolled" id="topbar">
+    <div class="topbar__inner container">
+      <a href="index.html" class="topbar__brand">
+        <svg class="topbar__symbol" viewBox="280 250 520 580" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 675,267 L 677,309 L 676,349 L 668,375 L 662,384 L 652,394 L 306,611 L 303,561 L 304,531 L 311,504 L 323,488 L 673,268 Z" fill="#C0191E"/>
+          <path d="M 399,586 L 539,586 L 488,615 L 484,617 L 344,617 L 397,587 Z" fill="#FFFFFF"/>
+          <path d="M 503,527 L 642,527 L 588,558 L 536,559 L 447,559 L 501,529 Z" fill="#FFFFFF"/>
+          <path d="M 601,472 L 740,472 L 689,501 L 683,504 L 545,504 L 599,473 Z" fill="#FFFFFF"/>
+          <path d="M 772,479 L 776,528 L 774,563 L 769,581 L 761,595 L 754,603 L 422,812 L 419,762 L 421,724 L 429,701 L 444,684 L 770,480 Z" fill="#C0191E"/>
+        </svg>
+        <div class="topbar__brand-text">
+          <span class="topbar__brand-name">DNA DO FUTEBOL</span>
+          <span class="topbar__brand-author">CENTRAL RESTRITA DE LEADS</span>
+        </div>
+      </a>
+
+      <div class="topbar__actions">
+        <button type="button" class="btn btn--ghost" id="btn-logout" style="padding:8px 14px;font-size:0.72rem;display:none;">
+          <i data-lucide="log-out"></i>
+          <span>Sair</span>
+        </button>
+        <a href="index.html" class="topbar__cta">
+          <i data-lucide="arrow-left"></i>
+          <span>Voltar para a Linkpage</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="crm-page section">
+    <div class="container">
+
+      <!-- PORTÃO DE AUTENTICAÇÃO OBRIGATÓRIA -->
+      <div class="auth-gate" id="auth-gate">
+        <div class="auth-card">
+          <div class="auth-card__icon">
+            <i data-lucide="shield-lock"></i>
+          </div>
+          <h1 class="auth-card__title">Área Restrita</h1>
+          <p class="auth-card__subtitle">
+            Acesso exclusivo para administração do <strong>DNA do Futebol</strong>. Insira suas credenciais para visualizar os leads capturados.
+          </p>
+
+          <form class="auth-form" id="admin-login-form">
+            <div class="auth-error" id="auth-error-msg">Credenciais inválidas.</div>
+            <div class="auth-field">
+              <label for="admin-user">USUÁRIO</label>
+              <input type="text" id="admin-user" required autocomplete="username" placeholder="Digite seu usuário" />
+            </div>
+            <div class="auth-field">
+              <label for="admin-pass">SENHA DE ACESSO</label>
+              <input type="password" id="admin-pass" required autocomplete="current-password" placeholder="••••••••••••" />
+            </div>
+            <button type="submit" class="btn btn--primary" style="width:100%;margin-top:6px;">
+              <i data-lucide="lock"></i>
+              <span>Desbloquear Painel de Leads</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- DASHBOARD DE LEADS (OCULTO ATÉ AUTENTICAR COM TOKEN VÁLIDO NO BACKEND) -->
+      <div id="crm-dashboard" hidden>
+        <div class="crm-header">
+          <div>
+            <div class="eyebrow">
+              <span class="eyebrow__line"></span>
+              <span class="eyebrow__text">BANCO DE DADOS NEON POSTGRESQL • SESSÃO AUTENTICADA</span>
+            </div>
+            <h2 class="section-title" style="margin-bottom:0;">Painel de <span class="text-red">Jogadores &amp; Leads</span></h2>
+          </div>
+
+          <div class="crm-header__actions">
+            <button type="button" class="btn btn--ghost" id="btn-refresh-leads" style="padding:12px 18px;font-size:0.75rem;">
+              <i data-lucide="refresh-cw"></i>
+              <span>Atualizar Lista</span>
+            </button>
+            <button type="button" class="btn btn--primary" id="btn-export-csv" style="padding:12px 18px;font-size:0.75rem;">
+              <i data-lucide="download"></i>
+              <span>Exportar CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="crm-stats">
+          <div class="crm-stat-card">
+            <span>TOTAL DE JOGADORES (LEADS)</span>
+            <strong id="stat-total-leads">0</strong>
+          </div>
+          <div class="crm-stat-card">
+            <span>AGUARDANDO CONTATO</span>
+            <strong id="stat-pending-leads" class="text-red">0</strong>
+          </div>
+          <div class="crm-stat-card">
+            <span>JÁ CONTATADOS</span>
+            <strong id="stat-contacted-leads">0</strong>
+          </div>
+          <div class="crm-stat-card">
+            <span>MAIOR PONTUAÇÃO (RECORDE)</span>
+            <strong id="stat-top-score">0 PTS</strong>
+          </div>
+        </div>
+
+        <!-- Barra de Busca e Filtros -->
+        <div class="crm-toolbar">
+          <div class="crm-search">
+            <i data-lucide="search"></i>
+            <input type="search" id="crm-search-input" placeholder="Buscar jogador por nome, telefone ou modo de jogo..." />
+          </div>
+          <div class="crm-filters">
+            <button type="button" class="crm-filter-btn is-active" data-filter="all">Todos</button>
+            <button type="button" class="crm-filter-btn" data-filter="pending">Pendentes</button>
+            <button type="button" class="crm-filter-btn" data-filter="contacted">Contatados</button>
+          </div>
+        </div>
+
+        <!-- Tabela de Leads -->
+        <div class="crm-table-wrap">
+          <table class="crm-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>JOGADOR / ATLETA</th>
+                <th>WHATSAPP</th>
+                <th>RECORDE &amp; GOLS</th>
+                <th>MODO PREFERIDO</th>
+                <th>STATUS DE CONTATO</th>
+                <th>AÇÃO DIRETA</th>
+              </tr>
+            </thead>
+            <tbody id="crm-leads-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const authGate = document.getElementById('auth-gate');
+      const crmDashboard = document.getElementById('crm-dashboard');
+      const loginForm = document.getElementById('admin-login-form');
+      const authError = document.getElementById('auth-error-msg');
+      const btnLogout = document.getElementById('btn-logout');
+
+      const tbody = document.getElementById('crm-leads-tbody');
+      const searchInput = document.getElementById('crm-search-input');
+      const filterBtns = document.querySelectorAll('.crm-filter-btn');
+      const btnRefresh = document.getElementById('btn-refresh-leads');
+      const btnExport = document.getElementById('btn-export-csv');
+
+      const elTotal = document.getElementById('stat-total-leads');
+      const elPending = document.getElementById('stat-pending-leads');
+      const elContacted = document.getElementById('stat-contacted-leads');
+      const elTopScore = document.getElementById('stat-top-score');
+
+      let adminToken = sessionStorage.getItem('dna_admin_token') || '';
+      let allLeads = [];
+      let currentFilter = 'all';
+
+      function getAuthHeaders() {
+        const h = { 'Content-Type': 'application/json' };
+        if (adminToken) h['Authorization'] = `Bearer ${adminToken}`;
+        return h;
+      }
+
+      function showLoginScreen() {
+        crmDashboard.hidden = true;
+        authGate.style.display = 'flex';
+        btnLogout.style.display = 'none';
+      }
+
+      function showDashboardScreen() {
+        authGate.style.display = 'none';
+        crmDashboard.hidden = false;
+        btnLogout.style.display = 'inline-flex';
+      }
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        authError.style.display = 'none';
+        const username = document.getElementById('admin-user').value.trim();
+        const password = document.getElementById('admin-pass').value;
+
+        try {
+          const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) {
+            authError.textContent = data.error || 'Usuário ou senha incorretos.';
+            authError.style.display = 'block';
+            return;
+          }
+          adminToken = data.token;
+          sessionStorage.setItem('dna_admin_token', adminToken);
+          await loadLeads();
+        } catch (err) {
+          authError.textContent = 'Erro de conexão com o servidor.';
+          authError.style.display = 'block';
+        }
+      });
+
+      btnLogout.addEventListener('click', async () => {
+        adminToken = '';
+        sessionStorage.removeItem('dna_admin_token');
+        await fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
+        showLoginScreen();
+      });
+
+      function formatPhoneDisplay(raw) {
+        const d = String(raw || '').replace(/\D/g, '');
+        if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+        if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+        return raw || '-';
+      }
+
+      function buildWhatsAppUrl(lead) {
+        const clean = String(lead.phone || '').replace(/\D/g, '');
+        const fullPhone = clean.startsWith('55') ? clean : `55${clean}`;
+        const msg = `Olá ${lead.name}! Aqui é o Paulo Vitor, do DNA do Futebol ⚽. Vi que você participou do nosso Desafio na Arena e fez ${lead.best_score || 0} pontos no modo ${lead.favorite_mode || '1v1 Duelo'}! Vamos conversar sobre como levar essa evolução para dentro de campo?`;
+        return `https://wa.me/${fullPhone}?text=${encodeURIComponent(msg)}`;
+      }
+
+      function renderTable() {
+        const q = (searchInput.value || '').toLowerCase().trim();
+        const filtered = allLeads.filter((l) => {
+          if (currentFilter === 'pending' && l.contacted) return false;
+          if (currentFilter === 'contacted' && !l.contacted) return false;
+          if (!q) return true;
+          return (
+            String(l.name || '').toLowerCase().includes(q) ||
+            String(l.phone || '').toLowerCase().includes(q) ||
+            String(l.favorite_mode || '').toLowerCase().includes(q)
+          );
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align:center;padding:42px;color:var(--dna-gray-muted);">
+                Nenhum jogador encontrado para este filtro.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = filtered
+          .map((l, idx) => {
+            const dateStr = l.created_at
+              ? new Date(l.created_at).toLocaleString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : '';
+            const statusClass = l.contacted ? 'crm-status-pill--done' : 'crm-status-pill--pending';
+            const statusText = l.contacted ? '✓ Contatado' : '⏳ Aguardando Contato';
+
+            return `
+              <tr>
+                <td><strong>#${idx + 1}</strong></td>
+                <td>
+                  <span class="crm-lead-name">${l.name}</span>
+                  <span class="crm-lead-date">Cadastrado em ${dateStr} • ${l.plays_count || 1} partida(s)</span>
+                </td>
+                <td><strong>${formatPhoneDisplay(l.phone)}</strong></td>
+                <td>
+                  <span class="crm-badge-score">${l.best_score || 0} PTS</span>
+                  <span style="font-size:0.78rem;color:var(--dna-gray-muted);margin-left:6px;">(${l.goals || 0} gols)</span>
+                </td>
+                <td>${l.favorite_mode || '1v1 Duelo'}</td>
+                <td>
+                  <button type="button" class="crm-status-pill ${statusClass}" data-toggle-id="${l.id}" data-current="${l.contacted}">
+                    ${statusText}
+                  </button>
+                </td>
+                <td>
+                  <a href="${buildWhatsAppUrl(l)}" target="_blank" rel="noopener noreferrer" class="crm-wa-btn" data-wa-id="${l.id}">
+                    <span>Chamar no WhatsApp</span>
+                  </a>
+                </td>
+              </tr>
+            `;
+          })
+          .join('');
+
+        tbody.querySelectorAll('[data-toggle-id]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const id = Number(btn.getAttribute('data-toggle-id'));
+            const curr = btn.getAttribute('data-current') === 'true';
+            await toggleContacted(id, !curr);
+          });
+        });
+
+        tbody.querySelectorAll('[data-wa-id]').forEach((link) => {
+          link.addEventListener('click', () => {
+            const id = Number(link.getAttribute('data-wa-id'));
+            toggleContacted(id, true);
+          });
+        });
+      }
+
+      async function toggleContacted(id, contacted) {
+        try {
+          const res = await fetch('/api/leads', {
+            method: 'PATCH',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ id, contacted }),
+          });
+          if (res.status === 401) {
+            showLoginScreen();
+            return;
+          }
+          const item = allLeads.find((x) => Number(x.id) === Number(id));
+          if (item) item.contacted = contacted;
+          updateKPIs();
+          renderTable();
+        } catch (err) {}
+      }
+
+      function updateKPIs() {
+        const total = allLeads.length;
+        const contacted = allLeads.filter((l) => l.contacted).length;
+        const pending = total - contacted;
+        const topScore = allLeads.reduce((max, l) => Math.max(max, Number(l.best_score) || 0), 0);
+
+        elTotal.textContent = String(total);
+        elPending.textContent = String(pending);
+        elContacted.textContent = String(contacted);
+        elTopScore.textContent = `${topScore} PTS`;
+      }
+
+      async function loadLeads() {
+        try {
+          const res = await fetch('/api/leads', {
+            headers: getAuthHeaders(),
+          });
+          if (res.status === 401) {
+            showLoginScreen();
+            return;
+          }
+          const data = await res.json();
+          allLeads = data.leads || [];
+          showDashboardScreen();
+          updateKPIs();
+          renderTable();
+        } catch (e) {
+          showLoginScreen();
+        }
+      }
+
+      searchInput.addEventListener('input', renderTable);
+
+      filterBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentFilter = btn.getAttribute('data-filter');
+          filterBtns.forEach((b) => b.classList.toggle('is-active', b === btn));
+          renderTable();
+        });
+      });
+
+      btnRefresh.addEventListener('click', loadLeads);
+
+      btnExport.addEventListener('click', () => {
+        if (allLeads.length === 0) return;
+        const header = ['ID', 'Nome', 'Telefone', 'Recorde_Pontos', 'Gols', 'Modo_Preferido', 'Partidas', 'Contatado', 'Data_Cadastro'];
+        const rows = allLeads.map((l) => [
+          l.id,
+          `"${String(l.name || '').replace(/"/g, '""')}"`,
+          `"${l.phone}"`,
+          l.best_score || 0,
+          l.goals || 0,
+          `"${l.favorite_mode || ''}"`,
+          l.plays_count || 1,
+          l.contacted ? 'Sim' : 'Nao',
+          l.created_at || '',
+        ]);
+        const csv = [header.join(','), ...rows.map((r) => r.join(','))].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `leads-dna-do-futebol-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+      });
+
+      // Verifica se já possui sessão autenticada ativa
+      loadLeads();
+    });
+  </script>
+</body>
+</html>

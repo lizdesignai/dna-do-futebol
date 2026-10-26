@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="280 245 520 590">
+  <style>
+    /* Por padrão em tema escuro: asas vermelhas, degraus brancos */
+    .wing { fill: #C0191E; }
+    .rung { fill: #FFFFFF; }
+
+    /* Quando o navegador/sistema estiver no tema claro: asas vermelhas, degraus pretos ou fundo de contraste */
+    @media (prefers-color-scheme: light) {
+      .wing { fill: #C0191E; }
+      .rung { fill: #1C1F21; }
+    }
+  </style>
+  <!-- Haste Superior (Raio / Energia) -->
+  <path class="wing" d="M 675,267 L 677,309 L 676,349 L 668,375 L 662,384 L 652,394 L 306,611 L 303,561 L 304,531 L 311,504 L 323,488 L 673,268 Z" />
+  <!-- Degrau 1 - Físico -->
+  <path class="rung" d="M 399,586 L 539,586 L 488,615 L 484,617 L 344,617 L 397,587 Z" />
+  <!-- Degrau 2 - Técnico -->
+  <path class="rung" d="M 503,527 L 642,527 L 588,558 L 536,559 L 447,559 L 501,529 Z" />
+  <!-- Degrau 3 - Tático -->
+  <path class="rung" d="M 601,472 L 740,472 L 689,501 L 683,504 L 545,504 L 599,473 Z" />
+  <!-- Haste Inferior (Raio / Movimento) -->
+  <path class="wing" d="M 772,479 L 776,528 L 774,563 L 769,581 L 761,595 L 754,603 L 422,812 L 419,762 L 421,724 L 429,701 L 444,684 L 770,480 Z" />
+</svg>

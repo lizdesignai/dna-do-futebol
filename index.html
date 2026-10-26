@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNA do Futebol | Por Paulo Vitor — O futebol vai além do jogo</title>
+  <meta name="description" content="Desenvolvimento esportivo com metodologia, conhecimento e propósito para formar atletas dentro e fora de campo. Por Paulo Vitor." />
+  <meta name="theme-color" content="#1C1F21" />
+
+  <!-- Favicon Dinâmico SVG (Adapta a temas claro e escuro) -->
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg" id="dynamic-favicon" />
+
+  <!-- ==========================================================================
+       GOOGLE TAG MANAGER (GTM) - HEAD SCRIPT
+       Substitua 'GTM-XXXXXXX' pelo seu ID oficial do Google Tag Manager
+       ========================================================================== -->
+  <!-- Google Tag Manager -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    /* 
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');
+    */
+  </script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Stylesheet Autoral -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Lucide Icons & GSAP (GreenSock) -->
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="js/soccer3d.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body class="is-loading">
+
+  <!-- Barra de Progresso de Scroll no Topo (Identidade Visual DNA) -->
+  <div class="scroll-progress-track" aria-hidden="true">
+    <div class="scroll-progress-bar" id="scroll-progress-bar"></div>
+  </div>
+
+  <!-- ==========================================================================
+       GOOGLE TAG MANAGER (NOSCRIPT) - BODY
+       Substitua 'GTM-XXXXXXX' pelo seu ID oficial do Google Tag Manager
+       ========================================================================== -->
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <!-- <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX" height="0" width="0" style="display:none;visibility:hidden"></iframe> -->
+  </noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <!-- Custom Cursor Follower (Desktop) -->
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+  <!-- ==========================================================================
+       PRE-LOADER ANIMADO EM SVG (SÍMBOLO DNA DO FUTEBOL)
+       Simboliza o raio (energia/velocidade) e os 3 degraus internos (Físico, Técnico, Tático)
+       ========================================================================== -->
+  <div class="preloader" id="preloader" role="status" aria-label="Carregando DNA do Futebol">
+    <div class="preloader__bg-pattern" aria-hidden="true"></div>
+    <div class="preloader__glow" aria-hidden="true"></div>
+
+    <div class="preloader__content">
+      <div class="preloader__svg-wrapper">
+        <!-- SVG Vetorial Fiel do Símbolo DNA do Futebol (5 componentes independentes) -->
+        <svg class="preloader__logo-svg" viewBox="260 230 560 620" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="dnaRedGrad" x1="300" y1="267" x2="776" y2="812" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#E0242A" />
+              <stop offset="50%" stop-color="#C0191E" />
+              <stop offset="100%" stop-color="#9A1115" />
+            </linearGradient>
+            <filter id="dnaGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#C0191E" flood-opacity="0.55" />
+            </filter>
+          </defs>
+
+          <!-- Haste Superior (Raio / Identidade) -->
+          <path class="dna-path dna-path--wing-top"
+            d="M 675,267 L 677,309 L 676,349 L 668,375 L 662,384 L 652,394 L 306,611 L 303,561 L 304,531 L 311,504 L 323,488 L 673,268 Z"
+            fill="url(#dnaRedGrad)" stroke="#FFFFFF" stroke-width="2" filter="url(#dnaGlow)" />
+
+          <!-- Degrau 1 - Base (Pilar Físico / Linha de Meta) -->
+          <path class="dna-path dna-path--rung-1"
+            d="M 399,586 L 539,586 L 488,615 L 484,617 L 344,617 L 397,587 Z"
+            fill="#FFFFFF" />
+
+          <!-- Degrau 2 - Centro (Pilar Técnico / Área Penal) -->
+          <path class="dna-path dna-path--rung-2"
+            d="M 503,527 L 642,527 L 588,558 L 536,559 L 447,559 L 501,529 Z"
+            fill="#FFFFFF" />
+
+          <!-- Degrau 3 - Topo (Pilar Tático / Evolução) -->
+          <path class="dna-path dna-path--rung-3"
+            d="M 601,472 L 740,472 L 689,501 L 683,504 L 545,504 L 599,473 Z"
+            fill="#FFFFFF" />
+
+          <!-- Haste Inferior (Raio / Movimento) -->
+          <path class="dna-path dna-path--wing-bottom"
+            d="M 772,479 L 776,528 L 774,563 L 769,581 L 761,595 L 754,603 L 422,812 L 419,762 L 421,724 L 429,701 L 444,684 L 770,480 Z"
+            fill="url(#dnaRedGrad)" stroke="#FFFFFF" stroke-width="2" filter="url(#dnaGlow)" />
+        </svg>
+      </div>
+
+      <div class="preloader__brand">
+        <span class="preloader__title">DNA DO FUTEBOL</span>
+        <span class="preloader__subtitle">POR PAULO VITOR</span>
+      </div>
+
+      <div class="preloader__pillars" aria-hidden="true">
+        <span class="preloader__pillar" data-pillar="1">FÍSICO</span>
+        <span class="preloader__pillar-sep">•</span>
+        <span class="preloader__pillar" data-pillar="2">TÉCNICO</span>
+        <span class="preloader__pillar-sep">•</span>
+        <span class="preloader__pillar" data-pillar="3">TÁTICO</span>
+      </div>
+
+      <div class="preloader__progress-wrap">
+        <div class="preloader__progress-bar" id="preloader-bar"></div>
+      </div>
+      <div class="preloader__counter" id="preloader-counter">0%</div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       TOP NAVIGATION BAR (MINIMALISTA E ELEGANTE)
+       ========================================================================== -->
+  <header class="topbar" id="topbar">
+    <div class="topbar__inner container">
+      <a href="#hero" class="topbar__brand" aria-label="DNA do Futebol - Início">
+        <svg class="topbar__symbol" viewBox="280 250 520 580" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 675,267 L 677,309 L 676,349 L 668,375 L 662,384 L 652,394 L 306,611 L 303,561 L 304,531 L 311,504 L 323,488 L 673,268 Z" fill="#C0191E"/>
+          <path d="M 399,586 L 539,586 L 488,615 L 484,617 L 344,617 L 397,587 Z" fill="#FFFFFF"/>
+          <path d="M 503,527 L 642,527 L 588,558 L 536,559 L 447,559 L 501,529 Z" fill="#FFFFFF"/>
+          <path d="M 601,472 L 740,472 L 689,501 L 683,504 L 545,504 L 599,473 Z" fill="#FFFFFF"/>
+          <path d="M 772,479 L 776,528 L 774,563 L 769,581 L 761,595 L 754,603 L 422,812 L 419,762 L 421,724 L 429,701 L 444,684 L 770,480 Z" fill="#C0191E"/>
+        </svg>
+        <div class="topbar__brand-text">
+          <span class="topbar__brand-name">DNA DO FUTEBOL</span>
+          <span class="topbar__brand-author">POR PAULO VITOR</span>
+        </div>
+      </a>
+
+      <div class="topbar__actions">
+        <span class="topbar__status">
+          <span class="topbar__status-dot"></span>
+          TREINAMENTO &amp; METODOLOGIA
+        </span>
+        <a href="https://wa.me/5575992782222?text=Ol%C3%A1%20Paulo%20Vitor!%20Vim%20pela%20p%C3%A1gina%20do%20DNA%20do%20Futebol%20e%20quero%20saber%20mais."
+           target="_blank"
+           rel="noopener noreferrer"
+           class="topbar__cta magnetic-btn"
+           data-gtm-event="cta_click"
+           data-gtm-location="topbar">
+          <span>Falar no WhatsApp</span>
+          <i data-lucide="arrow-up-right"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ==========================================================================
+         HERO SECTION — HEADER NATIVO EM ALTA DEFINIÇÃO (IDENTIDADE VISUAL OFICIAL)
+         Substitui o PNG esticado por tipografia vetorial nítida + atmosfera de campo
+         ========================================================================== -->
+    <section class="hero" id="hero">
+      <!-- Atmosfera Tática de Estádio + Padrão Geométrico DNA -->
+      <div class="hero__backdrop" aria-hidden="true">
+        <div class="hero__pitch-texture"></div>
+        <div class="hero__pattern-layer"></div>
+        <div class="hero__spotlight hero__spotlight--top"></div>
+        <div class="hero__spotlight hero__spotlight--center"></div>
+
+        <!-- Linhas Táticas Vetoriais do Campo ao Fundo -->
+        <svg class="hero__pitch-lines" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="720" cy="450" r="230" stroke="rgba(255,255,255,0.05)" stroke-width="2" />
+          <circle cx="720" cy="450" r="340" stroke="rgba(192,25,30,0.12)" stroke-width="1.5" stroke-dasharray="8 12" />
+          <line x1="0" y1="450" x2="1440" y2="450" stroke="rgba(255,255,255,0.04)" stroke-width="2" />
+          <path d="M 380,0 L 380,190 L 1060,190 L 1060,0" stroke="rgba(255,255,255,0.04)" stroke-width="2" />
+          <path d="M 380,900 L 380,710 L 1060,710 L 1060,900" stroke="rgba(255,255,255,0.04)" stroke-width="2" />
+        </svg>
+      </div>
+
+      <div class="hero__container container">
+        <!-- Assinatura Central da Marca (Vetorial Nítida) -->
+        <div class="hero__brand-lockup reveal-up">
+          <svg class="hero__brand-symbol" viewBox="280 245 520 590" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 675,267 L 677,309 L 676,349 L 668,375 L 662,384 L 652,394 L 306,611 L 303,561 L 304,531 L 311,504 L 323,488 L 673,268 Z" fill="#FFFFFF" />
+            <path d="M 399,586 L 539,586 L 488,615 L 484,617 L 344,617 L 397,587 Z" fill="#C0191E" />
+            <path d="M 503,527 L 642,527 L 588,558 L 536,559 L 447,559 L 501,529 Z" fill="#C0191E" />
+            <path d="M 601,472 L 740,472 L 689,501 L 683,504 L 545,504 L 599,473 Z" fill="#C0191E" />
+            <path d="M 772,479 L 776,528 L 774,563 L 769,581 L 761,595 L 754,603 L 422,812 L 419,762 L 421,724 L 429,701 L 444,684 L 770,480 Z" fill="#FFFFFF" />
+          </svg>
+          <div class="hero__brand-wordmark">
+            <span class="hero__brand-main">DNA DO FUTEBOL</span>
+            <span class="hero__brand-sub">POR PAULO VITOR</span>
+          </div>
+        </div>
+
+        <!-- Headline Principal conforme a Identidade Visual -->
+        <div class="hero__headline-block reveal-up">
+          <h1 class="hero__display-title">
+            <span class="hero__title-box-red">O FUTEBOL VAI</span>
+            <span class="hero__title-line-main">ALÉM DO</span>
+            <span class="hero__title-line-giant">JOGO<span class="text-red">.</span></span>
+          </h1>
+
+          <div class="hero__subtitle-block">
+            <span class="hero__subtitle-kicker">DESENVOLVIMENTO ESPORTIVO</span>
+            <div class="hero__subtitle-white-box">
+              <p>
+                Com <strong>metodologia</strong>, <strong>conhecimento</strong> e <strong>propósito</strong> para formar atletas dentro e fora de campo.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTAs Principais & Atalhos Rápidos -->
+        <div class="hero__actions-wrap reveal-up">
+          <div class="hero__cta-group">
+            <a href="https://wa.me/5575992782222?text=Ol%C3%A1%20Paulo%20Vitor!%20Quero%20saber%20mais%20sobre%20o%20treinamento%20do%20DNA%20do%20Futebol."
+               target="_blank"
+               rel="noopener noreferrer"
+               class="btn btn--primary magnetic-btn"
+               id="cta-saber-mais"
+               data-gtm-event="whatsapp_lead"
+               data-gtm-label="Quero saber mais">
+              <span class="btn__glow" aria-hidden="true"></span>
+              <span class="btn__icon-left">
+                <i data-lucide="message-circle"></i>
+              </span>
+              <span class="btn__text">Quero saber mais</span>
+              <span class="btn__icon-right">
+                <i data-lucide="arrow-right"></i>
+              </span>
+            </a>
+
+            <a href="#historia" class="btn btn--ghost">
+              <i data-lucide="gamepad-2"></i>
+              <span>Jogar Desafio de Fundamentos</span>
+            </a>
+          </div>
+
+          <!-- Quick Linkpage Hub (Acesso Rápido Interativo) -->
+          <div class="hero__quick-links" aria-label="Atalhos rápidos da página">
+            <a href="#historia" class="quick-chip">
+              <span class="quick-chip__num">01</span>
+              <span class="quick-chip__label">História &amp; Minigame DNA</span>
+              <i data-lucide="arrow-down-right"></i>
+            </a>
+            <a href="#treinamento" class="quick-chip">
+              <span class="quick-chip__num">02</span>
+              <span class="quick-chip__label">Pilares do Treinamento</span>
+              <i data-lucide="arrow-down-right"></i>
+            </a>
+            <a href="#evolucao" class="quick-chip">
+              <span class="quick-chip__num">03</span>
+              <span class="quick-chip__label">Começar Minha Evolução</span>
+              <i data-lucide="arrow-down-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================================
+           DIVISÓRIA ARQUITETÔNICA ENTRE A IMAGEM DE HEAD E O RESTANTE DA PÁGINA
+           Usa o Pattern Oficial da pasta img + Geometria Angular do Símbolo DNA
+           ======================================================================== -->
+      <div class="section-divider" aria-hidden="true">
+        <!-- Corte diagonal superior com linha de energia vermelha -->
+        <svg class="section-divider__svg-top" viewBox="0 0 1440 90" preserveAspectRatio="none">
+          <polygon points="0,90 1440,0 1440,90" fill="#C0191E" />
+          <polygon points="0,90 1440,18 1440,90" fill="#1C1F21" />
+        </svg>
+
+        <!-- Faixa com Pattern Oficial da Marca + Marquee Tipográfico em Organetto -->
+        <div class="section-divider__band">
+          <div class="section-divider__pattern-overlay"></div>
+          <div class="section-divider__marquee">
+            <div class="section-divider__track">
+              <span>QUEM VIVE O JOGO, JOGA DIFERENTE</span>
+              <span class="divider-bolt">///</span>
+              <span>UM DNA CONSTRUÍDO NO CAMPO</span>
+              <span class="divider-bolt">///</span>
+              <span>FÍSICO • TÉCNICO • TÁTICO</span>
+              <span class="divider-bolt">///</span>
+              <span>POR PAULO VITOR</span>
+              <span class="divider-bolt">///</span>
+              <span>QUEM VIVE O JOGO, JOGA DIFERENTE</span>
+              <span class="divider-bolt">///</span>
+              <span>UM DNA CONSTRUÍDO NO CAMPO</span>
+              <span class="divider-bolt">///</span>
+              <span>FÍSICO • TÉCNICO • TÁTICO</span>
+              <span class="divider-bolt">///</span>
+              <span>POR PAULO VITOR</span>
+              <span class="divider-bolt">///</span>
+            </div>
+          </div>
+
+          <!-- Emblema Central Flutuante na Divisória -->
+          <div class="section-divider__emblem">
+            <img src="img/FUNDO VERMELHO SEM FUNDO.png" alt="" class="section-divider__emblem-img" />
+          </div>
+        </div>
+
+        <svg class="section-divider__svg-bottom" viewBox="0 0 1440 70" preserveAspectRatio="none">
+          <polygon points="0,0 1440,0 0,70" fill="#1C1F21" />
+        </svg>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SEÇÃO 01 — HISTÓRIA & ESSÊNCIA (FUNDO PRETO #1C1F21 COM ALTO CONTRASTE)
+         "Uma história construída dentro e fora de campo."
+         ========================================================================== -->
+    <section class="section section--dark" id="historia">
+      <!-- Marca d'água gigante em Organetto inspirada na página 2 e 26 da Apresentação -->
+      <div class="section__bg-watermark" aria-hidden="true">ESSÊNCIA</div>
+
+      <div class="container">
+        <div class="story-grid">
+          <!-- Coluna Esquerda: SKILL GAMES FIFA / ARENA COMPETITIVA + PAINEL DE LÍDERES (NEON DB) -->
+          <div class="story-visual reveal-left">
+            <div class="motion-lab" id="motion-lab">
+              <!-- Top HUD Bar com Abas (Jogar Arena vs Painel de Líderes) e Placar -->
+              <div class="motion-lab__header">
+                <div class="motion-lab__tabs" role="tablist">
+                  <button type="button" class="lab-tab is-active" id="tab-btn-play" data-tab="play">
+                    <i data-lucide="gamepad-2"></i>
+                    <span>Arena de Treino</span>
+                  </button>
+                  <button type="button" class="lab-tab" id="tab-btn-rank" data-tab="rank">
+                    <i data-lucide="trophy"></i>
+                    <span>Painel de Líderes</span>
+                  </button>
+                </div>
+
+                <div class="motion-lab__scoreboard">
+                  <div class="score-pill">
+                    <span>TEMPO</span>
+                    <strong id="mg-timer">45s</strong>
+                  </div>
+                  <div class="score-pill">
+                    <span>PONTOS</span>
+                    <strong id="mg-score-points" class="text-red">0</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ABA 1: VIEWPORT DO MINIGAME (SKILL GAMES FIFA) -->
+              <div class="motion-lab__viewport" id="dna-soccer-viewport">
+                <canvas id="dna-soccer-canvas" aria-label="Skill Games DNA do Futebol: Duelo 1v1 contra Zagueiro, Ataque vs Defesa e Artilharia de Precisão"></canvas>
+
+                <!-- Telemetria de Modo & Medalha em Tempo Real -->
+                <div class="motion-lab__telemetry" aria-hidden="true">
+                  <div class="telemetry-chip">
+                    <span class="telemetry-chip__label">DESAFIO ATIVO</span>
+                    <strong class="telemetry-chip__val" id="telemetry-skill">DUELO 1v1 • DRIBLE O ZAGUEIRO</strong>
+                  </div>
+                  <div class="telemetry-chip">
+                    <span class="telemetry-chip__label">RANKING ATUAL</span>
+                    <strong class="telemetry-chip__val text-red" id="telemetry-speed">🥉 BRONZE</strong>
+                  </div>
+                </div>
+
+                <!-- Overlay Inicial / Cadastro de Jogador para Disputar o Ranking (Lead Capture) -->
+                <div class="game-overlay" id="game-lead-overlay">
+                  <div class="game-overlay__card">
+                    <div class="game-overlay__badge">
+                      <i data-lucide="flame"></i>
+                      <span>DESAFIO DE HABILIDADES • SKILL GAMES</span>
+                    </div>
+                    <h3 class="game-overlay__title" id="overlay-main-title">Dispute o Topo do Ranking!</h3>
+                    <p class="game-overlay__desc" id="overlay-main-desc">
+                      Encare o <strong>Duelo 1v1 contra o Zagueiro</strong>, o <strong>Ataque vs Defesa (1v2)</strong> ou a <strong>Artilharia de Precisão</strong>. Informe seu nome e WhatsApp para registrar seu recorde no Painel de Líderes!
+                    </p>
+
+                    <form class="game-lead-form" id="game-lead-form">
+                      <div class="game-lead-form__row">
+                        <div class="game-input-wrap">
+                          <i data-lucide="user"></i>
+                          <input type="text" id="lead-name" name="name" placeholder="Seu Nome ou Apelido" required maxlength="60" autocomplete="name" />
+                        </div>
+                        <div class="game-input-wrap">
+                          <i data-lucide="phone"></i>
+                          <input type="tel" id="lead-phone" name="phone" placeholder="WhatsApp (DDD + Número)" required maxlength="20" autocomplete="tel" />
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn--primary game-lead-form__submit" id="btn-start-ranked">
+                        <i data-lucide="play"></i>
+                        <span>Entrar em Campo e Disputar Ranking</span>
+                      </button>
+                      <button type="button" class="game-lead-form__skip" id="btn-play-free">
+                        Treinar livremente sem salvar no ranking
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Dica de Controle na Base do Campo -->
+                <div class="motion-lab__hint" aria-hidden="true">
+                  <i data-lucide="mouse-pointer-click"></i>
+                  <span id="mg-control-hint">Clique/Toque no gramado para driblar o zagueiro e clique no gol para finalizar!</span>
+                </div>
+              </div>
+
+              <!-- ABA 2: PAINEL DE LÍDERES AO VIVO (NEON POSTGRESQL) -->
+              <div class="motion-lab__leaderboard" id="dna-leaderboard-view" hidden>
+                <div class="leaderboard-box">
+                  <div class="leaderboard-box__top">
+                    <div>
+                      <h4>🏆 TOP ATLETAS • ARENA DNA</h4>
+                      <p>Classificação oficial dos desafios de treino</p>
+                    </div>
+                    <button type="button" class="motion-lab__btn-util" id="btn-back-to-game">
+                      <i data-lucide="play"></i>
+                      <span>Jogar Agora</span>
+                    </button>
+                  </div>
+
+                  <div class="leaderboard-list" id="leaderboard-list">
+                    <div class="leaderboard-empty">Carregando classificação...</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seletor de Modos de Jogo (Inspirado nos Skill Games do FIFA) -->
+              <div class="motion-lab__selector" role="tablist" aria-label="Escolha o Modo de Desafio">
+                <button type="button" class="motion-skill-btn is-active" data-mode="duel1v1">
+                  <span class="motion-skill-btn__num">01</span>
+                  <div class="motion-skill-btn__info">
+                    <strong>Duelo 1v1</strong>
+                    <span>Drible o Zagueiro + Gol</span>
+                  </div>
+                </button>
+
+                <button type="button" class="motion-skill-btn" data-mode="atkdef">
+                  <span class="motion-skill-btn__num">02</span>
+                  <div class="motion-skill-btn__info">
+                    <strong>Ataque vs Defesa</strong>
+                    <span>Pressão 1v2 + Tabela</span>
+                  </div>
+                </button>
+
+                <button type="button" class="motion-skill-btn" data-mode="sniper">
+                  <span class="motion-skill-btn__num">03</span>
+                  <div class="motion-skill-btn__info">
+                    <strong>Artilharia</strong>
+                    <span>Alvos Móveis &amp; Voleio</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna Direita: Copy Oficial + Destaque de Vivência e Educação Física -->
+          <div class="story-content reveal-right">
+            <div class="eyebrow">
+              <span class="eyebrow__line"></span>
+              <span class="eyebrow__text">TRAJETÓRIA &amp; FORMAÇÃO • PAULO VITOR</span>
+            </div>
+
+            <h2 class="section-title">
+              Uma história construída <span class="text-red">dentro e fora de campo.</span>
+            </h2>
+
+            <p class="story-content__paragraph">
+              Minha vivência no futebol e a formação em <strong>Educação Física</strong> me ensinaram que evoluir não é apenas repetir movimentos, mas compreender o jogo, tomar melhores decisões e desenvolver o próprio potencial dentro de campo.
+            </p>
+
+            <!-- Pilares de Valor Interativos -->
+            <div class="value-Metrics">
+              <div class="value-metric-item">
+                <div class="value-metric-item__icon">
+                  <i data-lucide="brain-circuit"></i>
+                </div>
+                <div class="value-metric-item__body">
+                  <h3>Compreensão do Jogo</h3>
+                  <p>Leitura tática e tomada de decisão consciente em cada lance.</p>
+                </div>
+              </div>
+
+              <div class="value-metric-item">
+                <div class="value-metric-item__icon">
+                  <i data-lucide="graduation-cap"></i>
+                </div>
+                <div class="value-metric-item__body">
+                  <h3>Ciência &amp; Pedagogia</h3>
+                  <p>Formação em Educação Física aliada à prática real dentro das quatro linhas.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SEÇÃO 02 — TREINAMENTO & METODOLOGIA (CONTRASTE BRANCO PURO #FFFFFF + PRETO + VERMELHO)
+         "Treine, aprenda e evolua dentro de campo."
+         ========================================================================== -->
+    <section class="section section--light" id="treinamento">
+      <div class="section__side-pattern" aria-hidden="true"></div>
+
+      <div class="container">
+        <div class="training-header reveal-up">
+          <div class="eyebrow eyebrow--dark">
+            <span class="eyebrow__line"></span>
+            <span class="eyebrow__text">METODOLOGIA DNA DO FUTEBOL</span>
+          </div>
+
+          <h2 class="section-title section-title--dark">
+            Treine, aprenda e evolua <span class="text-red">dentro de campo.</span>
+          </h2>
+
+          <p class="training-header__description">
+            O <strong>DNA do Futebol</strong> é um treinamento para quem quer jogar melhor, desenvolver suas habilidades e aprender mais sobre o futebol. Seja para melhorar o desempenho, ganhar mais confiança com a bola ou simplesmente aproveitar melhor o esporte.
+          </p>
+        </div>
+
+        <!-- Os 3 Degraus do Símbolo DNA (Físico, Técnico, Tático) + Objetivos -->
+        <div class="pillars-showcase">
+          <!-- Card 1: Desempenho & Físico -->
+          <article class="pillar-card reveal-up" data-tilt>
+            <div class="pillar-card__top">
+              <span class="pillar-card__step">DEGRAU 01</span>
+              <div class="pillar-card__icon">
+                <i data-lucide="zap"></i>
+              </div>
+            </div>
+            <h3 class="pillar-card__title">Melhorar o Desempenho</h3>
+            <p class="pillar-card__text">
+              Preparação dinâmica que potencializa sua velocidade, coordenação, resistência e intensidade para render mais durante todo o jogo.
+            </p>
+            <div class="pillar-card__footer">
+              <span class="pillar-card__tag">PILAR FÍSICO</span>
+              <span class="pillar-card__bars">
+                <i class="active"></i><i></i><i></i>
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 2: Confiança com a Bola & Técnico -->
+          <article class="pillar-card pillar-card--featured reveal-up" data-tilt>
+            <div class="pillar-card__pattern" aria-hidden="true"></div>
+            <div class="pillar-card__top">
+              <span class="pillar-card__step">DEGRAU 02</span>
+              <div class="pillar-card__icon">
+                <i data-lucide="target"></i>
+              </div>
+            </div>
+            <h3 class="pillar-card__title">Mais Confiança com a Bola</h3>
+            <p class="pillar-card__text">
+              Domínio, passe, condução e finalização trabalhados com correção detalhada e propósito claro, além da repetição mecânica.
+            </p>
+            <div class="pillar-card__footer">
+              <span class="pillar-card__tag">PILAR TÉCNICO</span>
+              <span class="pillar-card__bars">
+                <i class="active"></i><i class="active"></i><i></i>
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 3: Inteligência de Jogo & Tático -->
+          <article class="pillar-card reveal-up" data-tilt>
+            <div class="pillar-card__top">
+              <span class="pillar-card__step">DEGRAU 03</span>
+              <div class="pillar-card__icon">
+                <i data-lucide="compass"></i>
+              </div>
+            </div>
+            <h3 class="pillar-card__title">Compreender &amp; Aproveitar o Esporte</h3>
+            <p class="pillar-card__text">
+              Posicionamento, visão espacial e tomada de decisão para quem busca evoluir no seu ritmo e viver o futebol em sua totalidade.
+            </p>
+            <div class="pillar-card__footer">
+              <span class="pillar-card__tag">PILAR TÁTICO</span>
+              <span class="pillar-card__bars">
+                <i class="active"></i><i class="active"></i><i class="active"></i>
+              </span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Faixa Interativa da Simbologia da Marca -->
+        <div class="symbology-banner reveal-up">
+          <div class="symbology-banner__symbol">
+            <img src="img/FUNDO VERMELHO SEM FUNDO.png" alt="Símbolo DNA do Futebol" />
+          </div>
+          <div class="symbology-banner__text">
+            <h4>UM DNA CONSTRUÍDO NO CAMPO</h4>
+            <p>
+              As três linhas internas do nosso símbolo representam as marcações do campo — área do gol, linha de fundo e área penal — e formam a escada da evolução progressiva do atleta: <strong>Físico, Técnico e Tático</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SEÇÃO 03 — CONVERSÃO FINAL (VERMELHO INTENSO #C0191E & PRETO #1C1F21)
+         "Desenvolva suas habilidades com orientação profissional e treinamento estruturado."
+         Botão: "Quero começar minha evolução"
+         ========================================================================== -->
+    <section class="section section--cta" id="evolucao">
+      <div class="section--cta__pattern" aria-hidden="true"></div>
+      <div class="section--cta__glow" aria-hidden="true"></div>
+
+      <div class="container">
+        <div class="cta-master reveal-up">
+          <div class="cta-master__badge">
+            <img src="img/LOGOTIPO BRANCO SEM FUNDO 1.png" alt="DNA do Futebol Por Paulo Vitor" class="cta-master__logo" />
+          </div>
+
+          <p class="cta-master__slogan">QUEM VIVE O JOGO, JOGA DIFERENTE.</p>
+
+          <h2 class="cta-master__title">
+            Desenvolva suas habilidades com orientação profissional e treinamento estruturado.
+          </h2>
+
+          <div class="cta-master__action">
+            <a href="https://wa.me/5575992782222?text=Ol%C3%A1%20Paulo%20Vitor!%20Quero%20come%C3%A7ar%20minha%20evolu%C3%A7%C3%A3o%20com%20o%20treinamento%20do%20DNA%20do%20Futebol."
+               target="_blank"
+               rel="noopener noreferrer"
+               class="btn btn--cta-final magnetic-btn"
+               id="cta-comecar-evolucao"
+               data-gtm-event="whatsapp_conversion"
+               data-gtm-label="Quero começar minha evolução">
+              <span class="btn__pulse" aria-hidden="true"></span>
+              <span class="btn__icon-left">
+                <i data-lucide="flame"></i>
+              </span>
+              <span class="btn__text">Quero começar minha evolução</span>
+              <span class="btn__icon-right">
+                <i data-lucide="arrow-up-right"></i>
+              </span>
+            </a>
+
+            <div class="cta-master__meta">
+              <span><i data-lucide="check-circle-2"></i> Atendimento direto via WhatsApp</span>
+              <span><i data-lucide="shield-check"></i> Orientação por Paulo Vitor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <img src="img/FUNDO VERMELHO SEM FUNDO.png" alt="Símbolo DNA do Futebol" class="footer__symbol" />
+        <div>
+          <strong>DNA DO FUTEBOL</strong>
+          <span>POR PAULO VITOR • TODOS OS DIREITOS RESERVADOS</span>
+        </div>
+      </div>
+
+      <div class="footer__contact">
+        <a href="https://wa.me/5575992782222" target="_blank" rel="noopener noreferrer" class="footer__wa-link">
+          <i data-lucide="phone"></i>
+          <span>(75) 99278-2222</span>
+        </a>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <div class="footer__links">
+        <a href="privacidade.html">Política de Privacidade</a>
+        <span class="footer__links-sep">•</span>
+        <a href="termos.html">Termos de Uso</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
