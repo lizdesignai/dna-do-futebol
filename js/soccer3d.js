@@ -13,6 +13,11 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const dist2D = (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1);
 
+  // Resolução inteligente da API backend caso a página rode em Live Server (ex: porta 5500)
+  const API_BASE = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8080'))
+    ? 'http://localhost:8080'
+    : '';
+
   const MODE_META = {
     duel1v1: {
       name: '1v1 Duelo',
@@ -146,7 +151,7 @@
       if (!leaderboardList) return;
       leaderboardList.innerHTML = '<div class="leaderboard-empty">Atualizando classificação ao vivo...</div>';
       try {
-        const res = await fetch('/api/leaderboard');
+        const res = await fetch(`${API_BASE}/api/leaderboard`);
         const data = await res.json();
         const rows = data.leaderboard || [];
         if (rows.length === 0) {
@@ -193,7 +198,7 @@
     async function syncScoreToNeon() {
       if (!registeredPlayer || !registeredPlayer.phone) return;
       try {
-        await fetch('/api/score', {
+        await fetch(`${API_BASE}/api/score`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -265,7 +270,7 @@
         } catch (err) {}
 
         try {
-          await fetch('/api/lead', {
+          await fetch(`${API_BASE}/api/lead`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

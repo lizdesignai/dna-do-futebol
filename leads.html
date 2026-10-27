@@ -456,6 +456,12 @@
   </main>
 
   <script>
+    // Resolução inteligente da API: se a página for aberta via Live Server (ex: porta 5500)
+    // ou protocolo file://, redireciona as requisições para o backend Node.js na porta 8080
+    const API_BASE = (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '8080'))
+      ? 'http://localhost:8080'
+      : '';
+
     document.addEventListener('DOMContentLoaded', () => {
       const authGate = document.getElementById('auth-gate');
       const crmDashboard = document.getElementById('crm-dashboard');
@@ -503,7 +509,7 @@
         const password = document.getElementById('admin-pass').value;
 
         try {
-          const res = await fetch('/api/admin/login', {
+          const res = await fetch(`${API_BASE}/api/admin/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
@@ -526,7 +532,7 @@
       btnLogout.addEventListener('click', async () => {
         adminToken = '';
         sessionStorage.removeItem('dna_admin_token');
-        await fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
+        await fetch(`${API_BASE}/api/admin/logout`, { method: 'POST' }).catch(() => {});
         showLoginScreen();
       });
 
@@ -628,7 +634,7 @@
 
       async function toggleContacted(id, contacted) {
         try {
-          const res = await fetch('/api/leads', {
+          const res = await fetch(`${API_BASE}/api/leads`, {
             method: 'PATCH',
             headers: getAuthHeaders(),
             body: JSON.stringify({ id, contacted }),
@@ -658,7 +664,7 @@
 
       async function loadLeads() {
         try {
-          const res = await fetch('/api/leads', {
+          const res = await fetch(`${API_BASE}/api/leads`, {
             headers: getAuthHeaders(),
           });
           if (res.status === 401) {

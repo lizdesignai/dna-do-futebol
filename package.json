@@ -1,0 +1,17 @@
+{
+  "name": "dna-do-futebol",
+  "version": "1.0.0",
+  "description": "Linkpage Oficial DNA do Futebol - Por Paulo Vitor",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "futebol",
+    "treinamento",
+    "linkpage",
+    "paulo-vitor"
+  ],
+  "author": "LizDesign",
+  "license": "ISC"
+}
