@@ -17,24 +17,24 @@
     duel1v1: {
       name: '1v1 Duelo',
       hud: 'DUELO 1v1 • DRIBLE O ZAGUEIRO',
-      hint: 'Clique/Toque no gramado para driblar o zagueiro e clique no gol para chutar!',
+      hint: 'Clique no gramado para conduzir e no gol para chutar!',
     },
     atkdef: {
       name: 'Ataque vs Defesa',
-      hud: 'ATAQUE vs DEFESA (1v2) • USE A TABELA',
-      hint: 'Escape dos 2 defensores ou clique no alvo TABELA para furar o bloqueio!',
+      hud: 'ATAQUE vs DEFESA (1v2) • TABELA',
+      hint: 'Escape da pressão ou clique no alvo TABELA para furar a marcação!',
     },
     sniper: {
       name: 'Artilharia',
-      hud: 'ARTILHARIA • ACERTE OS ALVOS NO GOL',
-      hint: 'Clique nos alvos móveis dentro da trave para chutar ou emendar de voleio!',
+      hud: 'ARTILHARIA • ACERTE OS ALVOS',
+      hint: 'Clique nos alvos móveis dentro da trave para finalizar ou volear!',
     },
   };
 
   function getMedalForScore(pts) {
-    if (pts >= 1200) return '🏆 ELITE DNA';
-    if (pts >= 700) return '🥇 OURO';
-    if (pts >= 350) return '🥈 PRATA';
+    if (pts >= 1400) return '🏆 ELITE DNA';
+    if (pts >= 850) return '🥇 OURO';
+    if (pts >= 450) return '🥈 PRATA';
     return '🥉 BRONZE';
   }
 
@@ -59,9 +59,7 @@
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // ========================================================================
-    // ELEMENTOS DE UI, ABAS, FORMULÁRIO DE LEAD E LEADERBOARD
-    // ========================================================================
+    // Elementos de UI, Abas, Form de Lead e Leaderboard
     const elTimer = document.getElementById('mg-timer');
     const elScore = document.getElementById('mg-score-points');
     const elSkillHud = document.getElementById('telemetry-skill');
@@ -82,7 +80,7 @@
     const leaderboardList = document.getElementById('leaderboard-list');
     const btnBackToGame = document.getElementById('btn-back-to-game');
 
-    // Estado do Jogador Cadastrado (Salvo em localStorage para conveniência)
+    // Recupera jogador cadastrado do LocalStorage
     let registeredPlayer = null;
     try {
       const saved = localStorage.getItem('dna_player_lead');
@@ -93,13 +91,21 @@
       }
     } catch (e) {}
 
-    // Estado da Partida (Skill Game Round de 45 segundos)
+    // Estado da Partida
     let currentMode = 'duel1v1';
     let isMatchActive = false;
     let timeRemaining = 45;
     let scorePoints = 0;
     let goalsScored = 0;
     let comboMultiplier = 1;
+
+    // Cálculo do Fator de Dificuldade Progressiva (0 a 1+) baseado no tempo e pontuação
+    function getDifficultyFactor() {
+      const timeElapsed = Math.max(0, 45 - timeRemaining);
+      const timeFactor = timeElapsed / 45; // 0 no início até 1 no fim
+      const scoreFactor = Math.min(scorePoints / 1200, 1.2);
+      return Math.min(1.8, 1.0 + timeFactor * 0.45 + scoreFactor * 0.4);
+    }
 
     function updateHUD() {
       if (elTimer) elTimer.textContent = `${Math.ceil(timeRemaining)}s`;
@@ -109,7 +115,6 @@
       if (elControlHint) elControlHint.textContent = MODE_META[currentMode].hint;
     }
 
-    // Máscara rápida de WhatsApp no input
     if (inputPhone) {
       inputPhone.addEventListener('input', (e) => {
         let v = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -119,7 +124,6 @@
       });
     }
 
-    // Alternar entre Aba "Arena de Treino" e "Painel de Líderes"
     function switchTab(tab) {
       const isPlay = tab === 'play';
       if (tabBtnPlay) tabBtnPlay.classList.toggle('is-active', isPlay);
@@ -137,7 +141,7 @@
     if (tabBtnRank) tabBtnRank.addEventListener('click', () => switchTab('rank'));
     if (btnBackToGame) btnBackToGame.addEventListener('click', () => switchTab('play'));
 
-    // Busca Ranking real no Neon DB
+    // Busca e Renderiza Ranking Real do Neon DB
     async function fetchAndRenderLeaderboard() {
       if (!leaderboardList) return;
       leaderboardList.innerHTML = '<div class="leaderboard-empty">Atualizando classificação ao vivo...</div>';
@@ -185,7 +189,7 @@
         .replace(/"/g, '&quot;');
     }
 
-    // Salva Pontuação no Neon DB
+    // Salva Pontuação no Backend/Neon DB
     async function syncScoreToNeon() {
       if (!registeredPlayer || !registeredPlayer.phone) return;
       try {
@@ -202,7 +206,6 @@
       } catch (e) {}
     }
 
-    // Iniciar Partida (Com ou Sem Cadastro)
     function startMatch() {
       scorePoints = 0;
       goalsScored = 0;
@@ -214,26 +217,38 @@
       updateHUD();
     }
 
-    // Finalizar Partida quando o cronômetro zera
-    function finishMatch() {
+    // Finalização da Partida
+    async function finishMatch() {
       isMatchActive = false;
-      syncScoreToNeon();
+      await syncScoreToNeon();
 
       if (overlay) {
         overlay.classList.remove('is-hidden');
         const medal = getMedalForScore(scorePoints);
-        if (overlayTitle) {
-          overlayTitle.textContent = `Fim de Treino! ${scorePoints} PTS (${medal})`;
-        }
-        if (overlayDesc) {
-          overlayDesc.innerHTML = registeredPlayer
-            ? `Parabéns, <strong>${escapeHtml(registeredPlayer.name)}</strong>! Sua pontuação foi salva no <strong>Painel de Líderes</strong>. Jogue novamente para bater seu recorde ou confira o ranking!`
-            : `Você marcou <strong>${scorePoints} pontos</strong> e <strong>${goalsScored} gols</strong>! Preencha seu nome e WhatsApp abaixo para salvar seu recorde no Painel de Líderes!`;
+
+        if (registeredPlayer && registeredPlayer.name) {
+          if (overlayTitle) {
+            overlayTitle.textContent = `Treino Finalizado! ${scorePoints} PTS (${medal})`;
+          }
+          if (overlayDesc) {
+            overlayDesc.innerHTML = `Excelente jogada, <strong>${escapeHtml(registeredPlayer.name)}</strong>! Seu resultado foi salvo automaticamente no <strong>Painel de Líderes</strong> com <strong>${goalsScored} gols</strong>.`;
+          }
+          const submitBtn = document.getElementById('btn-start-ranked');
+          if (submitBtn) {
+            submitBtn.innerHTML = '<i data-lucide="rotate-ccw"></i><span>Jogar Novamente e Bater Recorde</span>';
+            if (window.lucide) window.lucide.createIcons();
+          }
+        } else {
+          if (overlayTitle) {
+            overlayTitle.textContent = `Treino Finalizado! ${scorePoints} PTS (${medal})`;
+          }
+          if (overlayDesc) {
+            overlayDesc.innerHTML = `Você marcou <strong>${scorePoints} pontos</strong> e <strong>${goalsScored} gols</strong>! Preencha seu nome e WhatsApp para registrar seu nome no Painel de Líderes!`;
+          }
         }
       }
     }
 
-    // Submit do Formulário de Lead -> Salva no Neon DB e Inicia Partida!
     if (leadForm) {
       leadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -259,7 +274,6 @@
               mode: MODE_META[currentMode].name,
             }),
           });
-          // Se já tinha pontos de uma partida anterior, sincroniza também
           if (scorePoints > 0) {
             await syncScoreToNeon();
           }
@@ -275,7 +289,6 @@
       });
     }
 
-    // Botões de Seleção de Modo (1v1 Duelo, Ataque vs Defesa, Artilharia)
     document.querySelectorAll('.motion-skill-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const mode = btn.getAttribute('data-mode');
@@ -290,7 +303,7 @@
     });
 
     // ========================================================================
-    // ENTIDADES DO JOGO: CAMPO, BONECO CAMISA 10, ZAGUEIROS IA, GOLEIRO E ALVOS
+    // GEOMETRIA E ENTIDADES
     // ========================================================================
     const getPitch = () => ({
       goalX: W * 0.5,
@@ -320,7 +333,7 @@
       bodyAngle: 0,
       kickSwing: 0,
       hasBall: true,
-      invincibleTimer: 0, // evita desarme repetido instantâneo
+      invincibleTimer: 0,
     };
 
     const keeper = {
@@ -347,14 +360,10 @@
       trail: [],
     };
 
-    // Zagueiros Adversários (IA de Marcação / Bote)
     let defenders = [];
-
-    // Alvos Móveis no Gol (Modo Artilharia)
     let sniperTargets = [];
     let sniperFeederTimer = 0;
 
-    // Efeitos Visuais
     const shockwaves = [];
     const particles = [];
     const floatingTexts = [];
@@ -413,9 +422,8 @@
       syncScoreToNeon();
     }
 
-    // Configura o Campo para a Nova Jogada / Modo Selecionado
     function setupModeEntities(mode) {
-      const p = getPitch();
+      const diff = getDifficultyFactor();
       player.x = W * 0.5;
       player.y = H * 0.76;
       player.z = 0;
@@ -438,7 +446,6 @@
       sniperTargets = [];
 
       if (mode === 'duel1v1') {
-        // 1 Zagueiro Central Inteligente fechando o espaço na entrada da área
         defenders.push({
           x: W * 0.5,
           y: H * 0.46,
@@ -447,12 +454,12 @@
           vx: 0,
           vy: 0,
           stride: 0,
-          speed: 128,
+          speed: 130 * diff,
+          tackleReach: 24 * Math.min(diff, 1.4),
           passed: false,
           stunTimer: 0,
         });
       } else if (mode === 'atkdef') {
-        // 2 Defensores coordenados (Zagueiro + Volante) pressionando o portador da bola
         defenders.push(
           {
             x: W * 0.36,
@@ -462,7 +469,8 @@
             vx: 0,
             vy: 0,
             stride: 0,
-            speed: 118,
+            speed: 122 * diff,
+            tackleReach: 23 * Math.min(diff, 1.4),
             passed: false,
             stunTimer: 0,
           },
@@ -474,47 +482,45 @@
             vx: 0,
             vy: 0,
             stride: 2,
-            speed: 122,
+            speed: 126 * diff,
+            tackleReach: 23 * Math.min(diff, 1.4),
             passed: false,
             stunTimer: 0,
           }
         );
       } else if (mode === 'sniper') {
-        // 2 Alvos Móveis nas Gavetas da Trave + Cruzamentos Automáticos para Voleio
+        const speedMult = Math.min(1.6, diff);
         sniperTargets = [
           {
-            x: p.goalX - p.goalW * 0.32,
-            y: p.goalY - 12,
+            x: getPitch().goalX - getPitch().goalW * 0.32,
+            y: getPitch().goalY - 12,
             dir: 1,
-            r: 18,
+            speed: 68 * speedMult,
+            r: Math.max(12, 18 / diff),
             pts: 250,
           },
           {
-            x: p.goalX + p.goalW * 0.32,
-            y: p.goalY - 18,
+            x: getPitch().goalX + getPitch().goalW * 0.32,
+            y: getPitch().goalY - 18,
             dir: -1,
-            r: 15,
+            speed: 78 * speedMult,
+            r: Math.max(10, 15 / diff),
             pts: 350,
           },
         ];
-        sniperFeederTimer = 1.4;
+        sniperFeederTimer = 1.3;
       }
     }
 
     setupModeEntities(currentMode);
 
-    // ========================================================================
-    // CONTROLES DE JOGO (CLIQUE/TOQUE NO GRAMADO, TABELA E GOL)
-    // ========================================================================
     function shootAtGoal(aimX) {
       const p = getPitch();
       const clampedAim = clamp(aimX, p.goalX - p.goalW * 0.45, p.goalX + p.goalW * 0.45);
-
       const isAirVolley = ball.z > 14 || currentMode === 'sniper';
       player.hasBall = false;
 
       if (isAirVolley) {
-        // Salto acrobático de Voleio / Bicicleta!
         player.z = Math.max(player.z, 32);
         player.vz = 95;
         player.bodyAngle = -1.1;
@@ -537,10 +543,11 @@
       ball.curveX = (clampedAim > p.goalX ? 1 : -1) * 45;
       ball.isShot = true;
 
-      // Goleiro reage e salta
+      // Goleiro reage mais rápido e com mais impulsão conforme a dificuldade sobe
+      const diff = getDifficultyFactor();
       keeper.diveDir = clampedAim > p.goalX ? 1 : -1;
-      keeper.diveTimer = 0.5;
-      keeper.vx = keeper.diveDir * 180;
+      keeper.diveTimer = 0.52;
+      keeper.vx = keeper.diveDir * (175 * Math.min(1.45, diff));
 
       spawnShockwave(ball.x, ball.y, '#E02026', 54);
       spawnParticles(ball.x, ball.y, 10, '#E02026', 18, 160);
@@ -563,12 +570,10 @@
       ball.curveX = 0;
       ball.isShot = false;
 
-      // Boneco infiltra nas costas da defesa para receber na frente!
       player.targetX = W * 0.52;
       player.targetY = H * 0.34;
       player.invincibleTimer = 1.2;
 
-      // Deixa os zagueiros atordoados olhando a tabelinha!
       defenders.forEach((d) => {
         d.stunTimer = 1.1;
       });
@@ -582,7 +587,7 @@
       const clickY = e.clientY - rect.top;
       const p = getPitch();
 
-      // 1. Clicou no Gol ou na parte superior da grande área -> Finaliza!
+      // Clicou no Gol
       if (clickY < p.goalY + 70 && Math.abs(clickX - p.goalX) < p.goalW * 0.85) {
         if (player.hasBall || dist2D(player.x, player.y, ball.x, ball.y) < 68) {
           shootAtGoal(clickX);
@@ -590,7 +595,7 @@
         }
       }
 
-      // 2. No Modo Ataque vs Defesa, clicou no Alvo "TABELA" -> Faz Tabelinha 1-2!
+      // Clicou na Tabela
       if (
         currentMode === 'atkdef' &&
         dist2D(clickX, clickY, p.passTargetX, p.passTargetY) < 48
@@ -599,22 +604,19 @@
         return;
       }
 
-      // 3. Clicou no gramado -> Drible / Condução rápida naquela direção!
+      // Clicou no gramado
       player.targetX = clamp(clickX, 50, W - 50);
       player.targetY = clamp(clickY, 120, H - 40);
       spawnShockwave(clickX, clickY, 'rgba(255, 255, 255, 0.45)', 24);
     });
 
-    // ========================================================================
-    // MOTOR FÍSICO E INTELIGÊNCIA ARTIFICIAL DOS ZAGUEIROS (60 FPS)
-    // ========================================================================
     let lastTime = performance.now();
     let aiDemoTimer = 1.8;
 
     function updateGame(dt) {
       const p = getPitch();
+      const diff = getDifficultyFactor();
 
-      // Cronômetro da Partida quando ativa
       if (isMatchActive) {
         timeRemaining -= dt;
         if (elTimer) elTimer.textContent = `${Math.max(0, Math.ceil(timeRemaining))}s`;
@@ -624,7 +626,6 @@
           return;
         }
       } else {
-        // Demonstração autônoma em segundo plano enquanto o overlay está aberto
         aiDemoTimer -= dt;
         if (aiDemoTimer <= 0) {
           if (player.y > H * 0.48 && player.hasBall) {
@@ -639,7 +640,7 @@
 
       if (player.invincibleTimer > 0) player.invincibleTimer -= dt;
 
-      // 1. Movimento do Boneco Atleta Camisa 10
+      // 1. Jogador
       const dx = player.targetX - player.x;
       const dy = player.targetY - player.y;
       const d = Math.hypot(dx, dy);
@@ -659,7 +660,6 @@
         player.vy = 0;
       }
 
-      // Salto e gravidade do Boneco
       if (player.z > 0 || player.vz !== 0) {
         player.z += player.vz * dt;
         player.vz -= 480 * dt;
@@ -676,29 +676,29 @@
       player.bodyAngle = lerp(player.bodyAngle, 0, dt * 7.5);
       player.kickSwing = lerp(player.kickSwing, 0, dt * 9.5);
 
-      // 2. Inteligência Artificial dos Zagueiros (Modos 1v1 e Ataque vs Defesa)
+      // 2. IA Zagueiros com Dificuldade Progressiva
       defenders.forEach((def) => {
         if (def.stunTimer > 0) {
           def.stunTimer -= dt;
           return;
         }
 
-        // O zagueiro tenta fechar a linha entre o jogador e o centro do gol
         const targetDefX = player.hasBall
-          ? lerp(player.x, p.goalX, 0.28)
+          ? lerp(player.x, p.goalX, 0.25)
           : def.homeX;
         const targetDefY = player.hasBall
-          ? clamp(player.y - 26, p.goalY + 68, H * 0.65)
+          ? clamp(player.y - 24, p.goalY + 68, H * 0.65)
           : def.homeY;
 
         const ddx = targetDefX - def.x;
         const ddy = targetDefY - def.y;
         const dd = Math.hypot(ddx, ddy);
 
+        const currentSpeed = def.speed || 128;
         if (dd > 3) {
-          const step = Math.min(dd, def.speed * dt);
-          def.vx = (ddx / dd) * def.speed;
-          def.vy = (ddy / dd) * def.speed;
+          const step = Math.min(dd, currentSpeed * dt);
+          def.vx = (ddx / dd) * currentSpeed;
+          def.vy = (ddy / dd) * currentSpeed;
           def.x += (ddx / dd) * step;
           def.y += (ddy / dd) * step;
           def.stride += dt * 13;
@@ -707,20 +707,20 @@
           def.vy = 0;
         }
 
-        // Verifica se o Jogador driblou e deixou o zagueiro para trás!
+        // Drible bem sucedido
         if (player.hasBall && !def.passed && player.y < def.y - 14) {
           def.passed = true;
           addScore(150, 'DRIBLE HUMILHANTE!', 'Zagueiro batido no 1v1');
           spawnShockwave(player.x, player.y, '#FFFFFF', 40);
         }
 
-        // Verifica Bote / Desarme do Zagueiro
+        // Desarme do zagueiro (raio aumenta com a dificuldade)
+        const reach = def.tackleReach || 23;
         if (
           player.hasBall &&
           player.invincibleTimer <= 0 &&
-          dist2D(player.x, player.y, def.x, def.y) < 22
+          dist2D(player.x, player.y, def.x, def.y) < reach
         ) {
-          // Zagueiro dá o bote!
           comboMultiplier = 1;
           spawnShockwave(def.x, def.y, '#E02026', 44);
           spawnFloatingText(def.x, def.y - 38, 'DESARMADO!', 'Mude de direção mais rápido!', '#D6D9DC');
@@ -728,10 +728,10 @@
         }
       });
 
-      // 3. Modo Artilharia: Movimento dos Alvos no Gol e Lançamentos para Voleio
+      // 3. Modo Artilharia
       if (currentMode === 'sniper') {
         sniperTargets.forEach((tObj) => {
-          tObj.x += tObj.dir * 65 * dt;
+          tObj.x += tObj.dir * (tObj.speed || 68) * dt;
           if (tObj.x > p.goalX + p.goalW * 0.42) tObj.dir = -1;
           if (tObj.x < p.goalX - p.goalW * 0.42) tObj.dir = 1;
         });
@@ -739,15 +739,14 @@
         if (player.hasBall) {
           sniperFeederTimer -= dt;
           if (sniperFeederTimer <= 0) {
-            // Levanta a bola para o jogador emendar um voleio!
             ball.vz = 155;
             ball.z = 8;
-            sniperFeederTimer = 2.4;
+            sniperFeederTimer = Math.max(1.6, 2.4 / diff);
           }
         }
       }
 
-      // 4. Física da Bola
+      // 4. Bola
       if (player.hasBall) {
         const lead = d > 4 ? 13 : 9;
         ball.x = lerp(ball.x, player.x + player.facingX * lead, dt * 16);
@@ -775,7 +774,6 @@
           ball.vz = Math.abs(ball.vz) > 45 ? -ball.vz * 0.55 : 0;
         }
 
-        // Tabelinha no modo Ataque vs Defesa
         if (
           ball.waitingPassReturn &&
           dist2D(ball.x, ball.y, p.passTargetX, p.passTargetY) < 28
@@ -790,7 +788,6 @@
           ball.vz = 65;
         }
 
-        // Jogador recebe o passe de volta
         if (
           !ball.isShot &&
           !ball.waitingPassReturn &&
@@ -801,11 +798,9 @@
           ball.vy = 0;
         }
 
-        // Chegada da Finalização no Gol
         if (ball.isShot && ball.y <= p.goalY + 12) {
           const insideGoal = Math.abs(ball.x - p.goalX) < p.goalW * 0.48;
 
-          // Verifica se acertou um Alvo de Precisão (Modo Artilharia)
           let hitTargetBonus = 0;
           if (currentMode === 'sniper' && insideGoal) {
             sniperTargets.forEach((tObj) => {
@@ -816,10 +811,12 @@
             });
           }
 
+          // Goleiro ganha maior alcance e velocidade com o tempo/pontos
+          const keeperReach = Math.min(36, 24 * diff);
           const savedByKeeper =
             currentMode !== 'sniper' &&
             insideGoal &&
-            Math.abs(ball.x - keeper.x) < 24 &&
+            Math.abs(ball.x - keeper.x) < keeperReach &&
             !ball.isVolley;
 
           if (savedByKeeper) {
@@ -859,11 +856,10 @@
         }
       }
 
-      // Rastro da bola
       ball.trail.unshift({ x: ball.x, y: ball.y - ball.z * 0.75, hot: ball.isShot });
       if (ball.trail.length > 15) ball.trail.pop();
 
-      // 5. Movimento do Goleiro
+      // 5. Goleiro
       if (keeper.diveTimer > 0) {
         keeper.diveTimer -= dt;
         keeper.x += keeper.vx * dt;
@@ -875,12 +871,12 @@
           p.goalX - p.goalW * 0.34,
           p.goalX + p.goalW * 0.34
         );
-        keeper.x = lerp(keeper.x, targetKX, dt * 5.5);
+        keeper.x = lerp(keeper.x, targetKX, dt * (5.5 * Math.min(1.4, diff)));
         keeper.angle = lerp(keeper.angle, 0, dt * 10);
       }
       keeper.x = clamp(keeper.x, p.goalX - p.goalW * 0.44, p.goalX + p.goalW * 0.44);
 
-      // 6. Atualização de Efeitos
+      // 6. Efeitos
       netWave = Math.max(0, netWave - dt * 1.8);
       goalFlash = Math.max(0, goalFlash - dt * 2.5);
 
@@ -911,13 +907,12 @@
     }
 
     // ========================================================================
-    // RENDERIZAÇÃO DO CAMPO, ZAGUEIROS, GOLEIRO, ALVOS E BONECO CAMISA 10
+    // RENDERIZAÇÃO
     // ========================================================================
     function drawPitch(t) {
       const p = getPitch();
       ctx.clearRect(0, 0, W, H);
 
-      // Faixas do Gramado
       const stripes = 7;
       const sh = H / stripes;
       for (let i = 0; i < stripes; i++) {
@@ -925,14 +920,12 @@
         ctx.fillRect(0, i * sh, W, sh + 1);
       }
 
-      // Iluminação de Estádio
       const grad = ctx.createRadialGradient(W * 0.5, H * 0.45, 40, W * 0.5, H * 0.5, W * 0.75);
       grad.addColorStop(0, `rgba(192, 25, 30, ${0.08 + goalFlash * 0.28})`);
       grad.addColorStop(1, 'rgba(12, 14, 16, 0.8)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
 
-      // Linhas da Grande e Pequena Área
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
       ctx.lineWidth = 2;
       ctx.strokeRect(p.goalX - p.boxW / 2, p.goalY, p.boxW, p.boxH);
@@ -942,7 +935,6 @@
       ctx.arc(p.goalX, p.goalY + p.boxH, 44, 0.15 * Math.PI, 0.85 * Math.PI);
       ctx.stroke();
 
-      // Alvo de Tabelinha (Visível no modo Ataque vs Defesa)
       const pulse = 1 + Math.sin(t * 4.5) * 0.1;
       if (currentMode === 'atkdef') {
         ctx.save();
@@ -963,7 +955,7 @@
         ctx.restore();
       }
 
-      // Trave & Rede Física
+      // Trave e Rede
       const gxL = p.goalX - p.goalW / 2;
       const gxR = p.goalX + p.goalW / 2;
       const gyT = p.goalY - p.goalH;
@@ -992,7 +984,6 @@
       ctx.stroke();
       ctx.restore();
 
-      // Alvos Móveis (Modo Artilharia) ou Indicadores de Gaveta
       if (currentMode === 'sniper') {
         sniperTargets.forEach((tObj) => {
           ctx.save();
@@ -1022,12 +1013,10 @@
       }
     }
 
-    // Desenha um Zagueiro Adversário (Camisa Preta/Grafite + Zona de Pressão)
     function drawDefender(def) {
       ctx.save();
       ctx.translate(def.x, def.y);
 
-      // Círculo Tático de Bote / Pressão Defensiva (Estilo FIFA Trainer)
       ctx.strokeStyle = def.stunTimer > 0 ? 'rgba(255,255,255,0.2)' : 'rgba(224, 32, 38, 0.45)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 4]);
@@ -1036,7 +1025,6 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Sombra
       ctx.fillStyle = 'rgba(0, 0, 0, 0.48)';
       ctx.beginPath();
       ctx.ellipse(0, 5, 16, 6.5, 0, 0, Math.PI * 2);
@@ -1044,7 +1032,6 @@
 
       const swing = Math.sin(def.stride) * 6;
 
-      // Pernas e Chuteiras Pretas
       ctx.strokeStyle = '#C68B59';
       ctx.lineWidth = 5.5;
       ctx.lineCap = 'round';
@@ -1055,7 +1042,6 @@
       ctx.lineTo(6, 2 - swing * 0.4);
       ctx.stroke();
 
-      // Calção e Camisa Defensiva (#212529 com detalhes em cinza claro)
       ctx.fillStyle = '#1E2226';
       ctx.strokeStyle = '#9BA1A6';
       ctx.lineWidth = 1.2;
@@ -1064,7 +1050,6 @@
       ctx.fill();
       ctx.stroke();
 
-      // Cabeça
       ctx.fillStyle = '#C68B59';
       ctx.beginPath();
       ctx.arc(0, -42, 10, 0, Math.PI * 2);
@@ -1095,7 +1080,6 @@
       ctx.fill();
       ctx.stroke();
 
-      // Luvas
       const armY = keeper.diveTimer > 0 ? -24 : -14;
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
@@ -1110,12 +1094,10 @@
       ctx.restore();
     }
 
-    // Boneco Atleta Principal (Camisa 10 Vermelho DNA)
     function drawPlayerBoneco(t) {
       ctx.save();
       ctx.translate(player.x, player.y);
 
-      // Indicador Direcional sob os pés do Jogador (Estilo FIFA Trainer Ring)
       ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 1.8;
       ctx.beginPath();
@@ -1137,7 +1119,6 @@
       const legL = isMoving ? stride * 8 : 0;
       const legR = player.kickSwing > 0.05 ? -player.kickSwing * 14 : isMoving ? -stride * 8 : 0;
 
-      // Pernas e Chuteiras Vermelhas DNA
       ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 6;
       ctx.lineCap = 'round';
@@ -1154,13 +1135,11 @@
       ctx.ellipse(7, 4 + legR * 0.4, 6.5, 3.8, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Calção Preto DNA
       ctx.fillStyle = '#1C1F21';
       ctx.beginPath();
       ctx.roundRect(-12, -17, 24, 10, 4);
       ctx.fill();
 
-      // Camisa Vermelha DNA (#C0191E)
       ctx.fillStyle = '#C0191E';
       ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 1.3;
@@ -1169,7 +1148,6 @@
       ctx.fill();
       ctx.stroke();
 
-      // Símbolo DNA no Peito
       ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -1179,7 +1157,6 @@
       ctx.lineTo(-3, -19);
       ctx.stroke();
 
-      // Cabeça + Faixa Vermelha
       ctx.save();
       ctx.translate(0, -46);
       ctx.fillStyle = '#D8A06C';
@@ -1304,7 +1281,6 @@
       drawPitch(t);
       if (currentMode !== 'sniper') drawGoalkeeper();
 
-      // Ordena zagueiros, bola e jogador por eixo Y (profundidade 2.5D)
       const renderables = [
         ...defenders.map((d) => ({ y: d.y, fn: () => drawDefender(d) })),
         { y: ball.y, fn: () => drawBall() },
